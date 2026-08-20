@@ -71,6 +71,7 @@ module = [
     "jaxlib.*",
     "matplotlib.*",
     "seaborn.*",
+    "sklearn.*",
 ]
 ignore_missing_imports = true
 
