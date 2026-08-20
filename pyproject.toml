@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reward-identified-set"
+version = "0.1.0"
+description = "Feature-space vulnerability auditing for RLHF reward models"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Yavuz Selim Kilinc", email = "yavuzselim18mart@gmail.com"},
+]
+
+dependencies = [
+    # Core numerical
+    "numpy>=1.26.0",
+    "scipy>=1.12.0",
+    # Deep learning
+    "torch>=2.2.0",
+    "transformers>=4.40.0",
+    "datasets>=2.19.0",
+    "safetensors>=0.4.0",
+    # JAX for VJP-based Jacobian extraction (E21, E22)
+    "jax>=0.4.25",
+    "jaxlib>=0.4.25",
+    # Feature analysis
+    "scikit-learn>=1.4.0",
+    # Config
+    "pyyaml>=6.0",
+    # Plotting (paper figures)
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    # Utilities
+    "tqdm>=4.66.0",
+    "rich>=13.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "mypy>=1.9.0",
+    "ruff>=0.3.0",
+    "black>=24.0.0",
+    "isort>=5.13.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["src*", "experiments*"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "transformers.*",
+    "datasets.*",
+    "jax.*",
+    "jaxlib.*",
+    "matplotlib.*",
+    "seaborn.*",
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM"]
+ignore = ["E501"]  # Allow long lines in comments
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "gpu: marks tests requiring GPU",
+    "tpu: marks tests requiring TPU",
+]

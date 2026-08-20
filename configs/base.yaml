@@ -1,0 +1,44 @@
+# =============================================================================
+# base.yaml — Shared configuration for all experiments
+# =============================================================================
+
+# Reproducibility (K4: fixed seed, deterministic)
+seed: 42
+
+# Hardware
+device: "auto"          # "auto", "cpu", "cuda", "tpu"
+dtype: "float32"        # Working precision for Fisher accumulation
+
+# Model
+model:
+  name: "OpenAssistant/reward-model-deberta-v3-base"
+  architecture: "deberta-v3-base"
+  feature_dim: 1024
+  layer: "penultimate"  # Which hidden layer to extract features from
+
+# Data
+data:
+  dataset: "Anthropic/hh-rlhf"
+  split: "test"
+  n_prompts: 500
+  cache_dir: "data/processed"
+  raw_dir: "data/raw"
+
+# Fisher / Manipulation Cost
+fisher:
+  damping_epsilon: 1.0e-6    # Tikhonov regularization
+  cg_tolerance: 1.0e-8       # Conjugate gradient solver tolerance
+  cg_max_iter: 1000
+  margin: 0.1                # Target reward shift margin m
+
+# Output
+output:
+  results_dir: "results"
+  baseline_dir: "results/baseline"
+  figures_dir: "paper/figures"
+  log_level: "INFO"
+
+# Verification
+verification:
+  atol: 0.0                  # Exact match required for baseline diff
+  rtol: 0.0
