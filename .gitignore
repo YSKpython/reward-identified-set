@@ -1,32 +1,10 @@
-```gitignore
-# Python compiled files
-*.pyc
+```
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-# Dependencies
-.venv/
-venv/
-node_modules/
-
-# Logs and temporary files
-*.log
-*.tmp
-
-# Editors
-.vscode/
-.idea/
-
-# Environment files
-.env
-.env.local
-*.env.*
-
-# Coverage reports
-.coverage
-coverage/
-htmlcov/
-
-# Python cache
-.mypy_cache/
-.pytest_cache/
+# Results directory
+results/
 ```
