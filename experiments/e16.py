@@ -8,13 +8,10 @@ into a low-rank manifold.
 
 from __future__ import annotations
 
-import json
-import os
 from pathlib import Path
 from typing import Any
 
 import numpy as np
-import yaml
 
 from src.analysis.cosine_structure import compute_cosine_structure
 from src.analysis.pca_rank import compute_pca
@@ -39,9 +36,7 @@ def _load_adapter(config: dict[str, Any]) -> DeBERTaV3Adapter:
     """
     model_name = config["model"]["name"]
     if model_name != "OpenAssistant/reward-model-deberta-v3-base":
-        raise NotImplementedError(
-            f"Unsupported model architecture: {model_name}"
-        )
+        raise NotImplementedError(f"Unsupported model architecture: {model_name}")
     adapter = DeBERTaV3Adapter()
     adapter.load(device=config.get("device", "auto"))
     return adapter

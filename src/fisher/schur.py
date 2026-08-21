@@ -1,6 +1,6 @@
 """Corrected block-inverse decomposition and LLF exactness verification.
 
-This module implements the mathematical core for resolving the "Schur gap" 
+This module implements the mathematical core for resolving the "Schur gap"
 miscalculation and establishing when the LLF bound is exactly tight.
 
 The key results are:
@@ -14,7 +14,6 @@ produces a spurious Schur gap.
 """
 
 from dataclasses import dataclass
-from typing import Dict
 
 import numpy as np
 
@@ -79,7 +78,7 @@ class RangeProjectionResult:
 
     P: np.ndarray
     Q: np.ndarray
-    basis_U: np.ndarray
+    basis_U: np.ndarray  # noqa: N815
     rank: int
     singular_values: np.ndarray
 
@@ -126,7 +125,7 @@ class LLFExactnessResult:
     relative_gap: float
 
 
-def partition_fisher(F: np.ndarray, p_theta: int) -> BlockFisherPartition:
+def partition_fisher(F: np.ndarray, p_theta: int) -> BlockFisherPartition:  # noqa: N803
     """Partition a full Fisher matrix into backbone and readout blocks.
 
     The first p_theta rows/columns are the backbone; the remaining are the readout.
@@ -143,7 +142,7 @@ def partition_fisher(F: np.ndarray, p_theta: int) -> BlockFisherPartition:
         ValueError: If F is not symmetric (within 1e-10).
         ValueError: If p_theta < 1 or p_theta >= F.shape[0].
     """
-    F = np.asarray(F)
+    F = np.asarray(F)  # noqa: N806
 
     # Validate F is square
     if F.ndim != 2 or F.shape[0] != F.shape[1]:
@@ -162,10 +161,10 @@ def partition_fisher(F: np.ndarray, p_theta: int) -> BlockFisherPartition:
     p_w = n - p_theta
 
     # Extract blocks
-    F_theta = F[:p_theta, :p_theta]
-    F_w = F[p_theta:, p_theta:]
-    F_theta_w = F[:p_theta, p_theta:]
-    F_w_theta = F[p_theta:, :p_theta]
+    F_theta = F[:p_theta, :p_theta]  # noqa: N806
+    F_w = F[p_theta:, p_theta:]  # noqa: N806
+    F_theta_w = F[:p_theta, p_theta:]  # noqa: N806
+    F_w_theta = F[p_theta:, :p_theta]  # noqa: N806
 
     return BlockFisherPartition(
         F_theta=F_theta,
@@ -177,7 +176,7 @@ def partition_fisher(F: np.ndarray, p_theta: int) -> BlockFisherPartition:
     )
 
 
-def _solve_symmetric(A: np.ndarray, b: np.ndarray, damping: float) -> np.ndarray:
+def _solve_symmetric(A: np.ndarray, b: np.ndarray, damping: float) -> np.ndarray:  # noqa: N803
     """Solve (A + damping*I) x = b using Cholesky or LU fallback.
 
     Args:
@@ -189,11 +188,11 @@ def _solve_symmetric(A: np.ndarray, b: np.ndarray, damping: float) -> np.ndarray
         Solution x, same shape as b.
     """
     n = A.shape[0]
-    A_reg = A + damping * np.eye(n)
+    A_reg = A + damping * np.eye(n)  # noqa: N806
 
     # Try Cholesky first (faster for SPD matrices)
     try:
-        L = np.linalg.cholesky(A_reg)
+        L = np.linalg.cholesky(A_reg)  # noqa: N806
         # Solve L y = b, then L^T x = y
         if b.ndim == 1:
             y = np.linalg.solve(L, b)
@@ -207,8 +206,8 @@ def _solve_symmetric(A: np.ndarray, b: np.ndarray, damping: float) -> np.ndarray
         return np.linalg.solve(A_reg, b)
 
 
-def corrected_quadratic_form(
-    F: np.ndarray,
+def corrected_quadratic_form(  # noqa: N803
+    F: np.ndarray,  # noqa: N803
     g: np.ndarray,
     p_theta: int,
     damping: float = 1e-6,
@@ -236,7 +235,7 @@ def corrected_quadratic_form(
         ValueError: If shapes are inconsistent.
         ValueError: If damping < 0.
     """
-    F = np.asarray(F)
+    F = np.asarray(F)  # noqa: N806
     g = np.asarray(g)
 
     # Validate damping
@@ -253,10 +252,10 @@ def corrected_quadratic_form(
     # Partition F
     partition = partition_fisher(F, p_theta)
 
-    F_theta = partition.F_theta
-    F_w = partition.F_w
-    F_theta_w = partition.F_theta_w
-    F_w_theta = partition.F_w_theta
+    F_theta = partition.F_theta  # noqa: N806
+    F_w = partition.F_w  # noqa: N806
+    F_theta_w = partition.F_theta_w  # noqa: N806
+    F_w_theta = partition.F_w_theta  # noqa: N806
 
     # Split g
     g_theta = g[:p_theta]
@@ -266,27 +265,27 @@ def corrected_quadratic_form(
     eps = damping
 
     # Step 2: Compute Schur complement S = F_theta - F_theta_w (F_w + eps I)^{-1} F_w_theta
-    F_w_inv_F_w_theta = _solve_symmetric(F_w, F_w_theta, eps)
-    S = F_theta - F_theta_w @ F_w_inv_F_w_theta
+    F_w_inv_F_w_theta = _solve_symmetric(F_w, F_w_theta, eps)  # noqa: N806
+    S = F_theta - F_theta_w @ F_w_inv_F_w_theta  # noqa: N806
 
     # Step 3: Compute backbone term g_theta^T (S + eps I)^{-1} g_theta
-    S_inv_g_theta = _solve_symmetric(S, g_theta, eps)
+    S_inv_g_theta = _solve_symmetric(S, g_theta, eps)  # noqa: N806
     backbone_term = float(g_theta @ S_inv_g_theta)
 
     # Step 4: Compute shifted residual r = g_w - F_w_theta (F_theta + eps I)^{-1} g_theta
-    F_theta_inv_g_theta = _solve_symmetric(F_theta, g_theta, eps)
+    F_theta_inv_g_theta = _solve_symmetric(F_theta, g_theta, eps)  # noqa: N806
     shifted_residual = g_w - F_w_theta @ F_theta_inv_g_theta
 
     # Step 5: Compute corrected readout term r^T (F_w + eps I)^{-1} r
-    F_w_inv_r = _solve_symmetric(F_w, shifted_residual, eps)
+    F_w_inv_r = _solve_symmetric(F_w, shifted_residual, eps)  # noqa: N806
     readout_term_corrected = float(shifted_residual @ F_w_inv_r)
 
     # Step 6: Compute naive readout term g_w^T (F_w + eps I)^{-1} g_w
-    F_w_inv_g_w = _solve_symmetric(F_w, g_w, eps)
+    F_w_inv_g_w = _solve_symmetric(F_w, g_w, eps)  # noqa: N806
     readout_term_naive = float(g_w @ F_w_inv_g_w)
 
     # Step 7: Compute total via direct pseudoinverse g^T (F + eps I)^{-1} g
-    F_inv_g = _solve_symmetric(F, g, eps)
+    F_inv_g = _solve_symmetric(F, g, eps)  # noqa: N806
     total = float(g @ F_inv_g)
 
     # Step 8: Compute gaps
@@ -306,7 +305,7 @@ def corrected_quadratic_form(
     )
 
 
-def range_projection(J_w: np.ndarray, tol: float = 1e-10) -> RangeProjectionResult:
+def range_projection(J_w: np.ndarray, tol: float = 1e-10) -> RangeProjectionResult:  # noqa: N803
     """Compute the orthogonal projection onto range(J_w) via SVD.
 
     Uses numpy.linalg.svd with full_matrices=False. The rank is determined
@@ -323,7 +322,7 @@ def range_projection(J_w: np.ndarray, tol: float = 1e-10) -> RangeProjectionResu
         ValueError: If J_w is not 2-D.
         ValueError: If J_w has zero rows or columns.
     """
-    J_w = np.asarray(J_w)
+    J_w = np.asarray(J_w)  # noqa: N806
 
     # Validate J_w is 2-D
     if J_w.ndim != 2:
@@ -340,24 +339,24 @@ def range_projection(J_w: np.ndarray, tol: float = 1e-10) -> RangeProjectionResu
         raise ValueError("J_w must have non-zero rows and columns")
 
     # Compute thin SVD
-    U, s, Vt = np.linalg.svd(J_w, full_matrices=False)
+    U, s, Vt = np.linalg.svd(J_w, full_matrices=False)  # noqa: N806
 
     # Determine rank
     rank = int(np.sum(s > tol))
 
     # Truncate U to significant singular vectors
     if rank > 0:
-        U_r = U[:, :rank]
+        U_r = U[:, :rank]  # noqa: N806
         s_r = s[:rank]
     else:
-        U_r = np.zeros((n_rows, 0))
+        U_r = np.zeros((n_rows, 0))  # noqa: N806
         s_r = np.array([])
 
     # Construct P = U U^T
-    P = U_r @ U_r.T
+    P = U_r @ U_r.T  # noqa: N806
 
     # Construct Q = I - P
-    Q = np.eye(n_rows) - P
+    Q = np.eye(n_rows) - P  # noqa: N806
 
     return RangeProjectionResult(
         P=P,
@@ -368,7 +367,7 @@ def range_projection(J_w: np.ndarray, tol: float = 1e-10) -> RangeProjectionResu
     )
 
 
-def _matrix_rank(A: np.ndarray, tol: float = 1e-10) -> int:
+def _matrix_rank(A: np.ndarray, tol: float = 1e-10) -> int:  # noqa: N803
     """Compute numerical rank of a matrix via SVD.
 
     Args:
@@ -382,9 +381,9 @@ def _matrix_rank(A: np.ndarray, tol: float = 1e-10) -> int:
     return int(np.sum(s > tol))
 
 
-def check_range_inclusion(
-    J_theta: np.ndarray,
-    J_w: np.ndarray,
+def check_range_inclusion(  # noqa: N803
+    J_theta: np.ndarray,  # noqa: N803
+    J_w: np.ndarray,  # noqa: N803
     tol: float = 1e-10,
 ) -> RangeInclusionResult:
     """Verify whether range(J_theta) ⊆ range(J_w).
@@ -405,8 +404,8 @@ def check_range_inclusion(
         ValueError: If row counts differ.
         ValueError: If either matrix is not 2-D.
     """
-    J_theta = np.asarray(J_theta)
-    J_w = np.asarray(J_w)
+    J_theta = np.asarray(J_theta)  # noqa: N806
+    J_w = np.asarray(J_w)  # noqa: N806
 
     # Validate both are 2-D
     if J_theta.ndim != 2:
@@ -418,11 +417,11 @@ def check_range_inclusion(
     if J_theta.shape[0] != J_w.shape[0]:
         raise ValueError("J_theta and J_w must have the same number of rows")
 
-    n = J_w.shape[0]
+    n = J_w.shape[0]  # noqa: F841
 
     # Compute Q_{J_w}
     proj_result = range_projection(J_w, tol)
-    Q = proj_result.Q
+    Q = proj_result.Q  # noqa: N806
 
     # Compute projection residuals for each column of J_theta
     max_residual = 0.0
@@ -439,7 +438,7 @@ def check_range_inclusion(
     rank_w = proj_result.rank
 
     # Compute joint rank
-    J_joint = np.hstack([J_theta, J_w])
+    J_joint = np.hstack([J_theta, J_w])  # noqa: N806
     rank_joint = _matrix_rank(J_joint, tol)
 
     return RangeInclusionResult(
@@ -452,9 +451,9 @@ def check_range_inclusion(
     )
 
 
-def _compute_mc_from_jacobian(
+def _compute_mc_from_jacobian(  # noqa: N803
     a: np.ndarray,
-    J: np.ndarray,
+    J: np.ndarray,  # noqa: N803
     margin: float,
     damping: float = 1e-6,
 ) -> float:
@@ -470,11 +469,11 @@ def _compute_mc_from_jacobian(
         Manipulation cost value.
     """
     # Compute J J^T
-    JJT = J @ J.T
+    JJT = J @ J.T  # noqa: N806
 
     # Solve (J J^T + damping*I) x = a
     n = JJT.shape[0]
-    JJT_reg = JJT + damping * np.eye(n)
+    JJT_reg = JJT + damping * np.eye(n)  # noqa: N806
     x = np.linalg.solve(JJT_reg, a)
 
     # Compute quadratic form a^T x
@@ -486,12 +485,12 @@ def _compute_mc_from_jacobian(
     return margin / np.sqrt(quad_form)
 
 
-def llf_exactness_check(
+def llf_exactness_check(  # noqa: N803
     a: np.ndarray,
-    J_w: np.ndarray,
-    J_theta: np.ndarray,
-    F_full: np.ndarray,
-    F_llf: np.ndarray,
+    J_w: np.ndarray,  # noqa: N803
+    J_theta: np.ndarray,  # noqa: N803
+    F_full: np.ndarray,  # noqa: N803
+    F_llf: np.ndarray,  # noqa: N803
     margin: float,
     tol: float = 1e-10,
     damping: float = 1e-6,
@@ -523,8 +522,8 @@ def llf_exactness_check(
         ValueError: If margin <= 0.
     """
     a = np.asarray(a)
-    J_w = np.asarray(J_w)
-    J_theta = np.asarray(J_theta)
+    J_w = np.asarray(J_w)  # noqa: N806
+    J_theta = np.asarray(J_theta)  # noqa: N806
 
     # Validate margin
     if margin <= 0:
@@ -544,13 +543,13 @@ def llf_exactness_check(
 
     # Step 1: Compute Q_{J_w} a and its norm
     proj_result = range_projection(J_w, tol)
-    Q = proj_result.Q
-    Q_a = Q @ a
+    Q = proj_result.Q  # noqa: N806
+    Q_a = Q @ a  # noqa: N806
     residual_norm = float(np.linalg.norm(Q_a))
 
     # Step 2: Compute MC_full using the full Jacobian J = [J_theta | J_w]
     # When range(J_theta) ⊆ range(J_w), range(J_full) = range(J_w)
-    J_full = np.hstack([J_theta, J_w])
+    J_full = np.hstack([J_theta, J_w])  # noqa: N806
     mc_full = _compute_mc_from_jacobian(a, J_full, margin, damping)
 
     # Step 3: Compute MC_LLF using J_w only
@@ -560,10 +559,7 @@ def llf_exactness_check(
     is_exact = residual_norm < tol
 
     # Step 5: Compute relative gap
-    if mc_llf > 0:
-        relative_gap = abs(mc_full - mc_llf) / mc_llf
-    else:
-        relative_gap = float("inf")
+    relative_gap = abs(mc_full - mc_llf) / mc_llf if mc_llf > 0 else float("inf")
 
     return LLFExactnessResult(
         is_exact=is_exact,
@@ -575,10 +571,10 @@ def llf_exactness_check(
     )
 
 
-def range_based_cost(
+def range_based_cost(  # noqa: N803
     a: np.ndarray,
-    J_w: np.ndarray,
-    W_C: np.ndarray,
+    J_w: np.ndarray,  # noqa: N803
+    W_C: np.ndarray,  # noqa: N803
     margin: float,
     tol: float = 1e-10,
 ) -> float:
@@ -627,22 +623,22 @@ def range_based_cost(
 
     # Compute SVD of J_w
     proj_result = range_projection(J_w, tol)
-    U = proj_result.basis_U
+    U = proj_result.basis_U  # noqa: N806
     rank = proj_result.rank
 
     if rank == 0:
         raise ValueError("J_w has zero rank; cannot compute range-based cost")
 
     # Compute U^T W_C U
-    UT_WC = U.T @ W_C
-    UT_WC_U = UT_WC @ U
+    UT_WC = U.T @ W_C  # noqa: N806
+    UT_WC_U = UT_WC @ U  # noqa: N806
 
     # Invert with damping for stability
     eps = 1e-12
-    UT_WC_U_inv = np.linalg.inv(UT_WC_U + eps * np.eye(rank))
+    UT_WC_U_inv = np.linalg.inv(UT_WC_U + eps * np.eye(rank))  # noqa: N806
 
     # Compute a^T U (U^T W_C U)^{-1} U^T a
-    U_T_a = U.T @ a
+    U_T_a = U.T @ a  # noqa: N806
     intermediate = UT_WC_U_inv @ U_T_a
     quad_form = float(U_T_a @ intermediate)
 
@@ -652,12 +648,12 @@ def range_based_cost(
     return margin / np.sqrt(quad_form)
 
 
-def schur_gap_diagnostic(
-    F: np.ndarray,
+def schur_gap_diagnostic(  # noqa: N803
+    F: np.ndarray,  # noqa: N803
     g: np.ndarray,
     p_theta: int,
     damping: float = 1e-6,
-) -> Dict[str, object]:
+) -> dict[str, object]:
     """Return a diagnostic dictionary comparing corrected and naive Schur gaps.
 
     This replicates the diagnostic from the paper's Experiment 18, which
@@ -690,9 +686,7 @@ def schur_gap_diagnostic(
 
     # Generate diagnosis
     if correction_magnitude < 1e-10:
-        diagnosis = (
-            "No significant correction needed; naive and corrected forms agree."
-        )
+        diagnosis = "No significant correction needed; naive and corrected forms agree."
     elif relative_correction > 0.1:
         diagnosis = (
             "Substantial correction detected. The naive unshifted residual would "

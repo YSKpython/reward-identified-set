@@ -11,12 +11,10 @@ using the analytic optimum rather than sampling random directions.
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 
 from src.fisher.llf import solve_fisher_system
-from src.fisher.schur import range_projection
 
 
 @dataclass
@@ -44,8 +42,8 @@ class FlipCostResult:
     null_fraction: float
 
 
-def _decompose_g_null_range(
-    F: np.ndarray,
+def _decompose_g_null_range(  # noqa: N803
+    F: np.ndarray,  # noqa: N803
     g: np.ndarray,
     tol: float = 1e-8,
 ) -> tuple[float, float, float]:
@@ -77,7 +75,7 @@ def _decompose_g_null_range(
         # All eigenvalues are zero or negative; g is entirely in null-space
         return g_norm, 0.0, g_norm
 
-    U_r = eigenvectors[:, rank_mask]  # shape (n, rank)
+    U_r = eigenvectors[:, rank_mask]  # noqa: N806
 
     # Project g onto range(F): g_range = U_r U_r^T g
     g_range = U_r @ (U_r.T @ g)
@@ -90,8 +88,8 @@ def _decompose_g_null_range(
     return g_norm, g_range_norm, g_null_norm
 
 
-def compute_flip_cost(
-    F: np.ndarray,
+def compute_flip_cost(  # noqa: N803
+    F: np.ndarray,  # noqa: N803
     g: np.ndarray,
     margin: float,
     damping: float = 1e-6,
@@ -159,7 +157,7 @@ def compute_flip_cost(
         raise ValueError("damping must be non-negative")
 
     # Apply Tikhonov damping: F_ε = F + damping * I
-    F_epsilon = F + damping * np.eye(n)
+    F_epsilon = F + damping * np.eye(n)  # noqa: N806
 
     # Solve F_ε s = g using CG solver
     cg_result = solve_fisher_system(
@@ -177,21 +175,16 @@ def compute_flip_cost(
 
     # Validate quadratic form is positive
     if quadratic_form <= 0:
-        raise ValueError(
-            "Quadratic form is non-positive; indicates numerical failure"
-        )
+        raise ValueError("Quadratic form is non-positive; indicates numerical failure")
 
     # Compute flip cost FC = m² / V
-    flip_cost = (margin ** 2) / quadratic_form
+    flip_cost = (margin**2) / quadratic_form
 
     # Decompose g into range and null components of F
     g_norm, g_range_norm, g_null_norm = _decompose_g_null_range(F, g, tol=tol)
 
     # Compute null fraction
-    if g_norm > 0:
-        null_fraction = (g_null_norm ** 2) / (g_norm ** 2)
-    else:
-        null_fraction = 0.0
+    null_fraction = g_null_norm**2 / g_norm**2 if g_norm > 0 else 0.0
 
     return FlipCostResult(
         flip_cost=flip_cost,
@@ -205,9 +198,9 @@ def compute_flip_cost(
     )
 
 
-def compute_flip_cost_batch(
-    F: np.ndarray,
-    G: np.ndarray,
+def compute_flip_cost_batch(  # noqa: N803
+    F: np.ndarray,  # noqa: N803
+    G: np.ndarray,  # noqa: N803
     margin: float,
     damping: float = 1e-6,
     tol: float = 1e-8,
@@ -242,8 +235,8 @@ def compute_flip_cost_batch(
         >>> costs.shape
         (2,)
     """
-    F = np.asarray(F, dtype=np.float64)
-    G = np.asarray(G, dtype=np.float64)
+    F = np.asarray(F, dtype=np.float64)  # noqa: N806
+    G = np.asarray(G, dtype=np.float64)  # noqa: N806
 
     # Validate G is 2-D
     if G.ndim != 2:

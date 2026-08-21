@@ -35,9 +35,7 @@ def _load_adapter(config: dict[str, Any]) -> DeBERTaV3Adapter:
     """
     model_name = config["model"]["name"]
     if model_name != "OpenAssistant/reward-model-deberta-v3-base":
-        raise NotImplementedError(
-            f"Unsupported model architecture: {model_name}"
-        )
+        raise NotImplementedError(f"Unsupported model architecture: {model_name}")
     adapter = DeBERTaV3Adapter()
     adapter.load(device=config.get("device", "auto"))
     return adapter
@@ -89,7 +87,7 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
 
         # Build Fisher matrix
         fisher_result = build_fisher_matrix(features, pairs, reward_diffs)
-        F = fisher_result.fisher_matrix
+        F = fisher_result.fisher_matrix  # noqa: N806
 
         # Construct constraint gradient g as mean feature difference direction
         # g = mean(phi(x_i) - phi(x_j)) over all pairs

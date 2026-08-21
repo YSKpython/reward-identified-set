@@ -34,9 +34,7 @@ def _load_adapter(config: dict[str, Any]) -> DeBERTaV3Adapter:
     """
     model_name = config["model"]["name"]
     if model_name != "OpenAssistant/reward-model-deberta-v3-base":
-        raise NotImplementedError(
-            f"Unsupported model architecture: {model_name}"
-        )
+        raise NotImplementedError(f"Unsupported model architecture: {model_name}")
     adapter = DeBERTaV3Adapter()
     adapter.load(device=config.get("device", "auto"))
     return adapter
@@ -73,8 +71,10 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
         # Generate synthetic prompts and extract features
         # Use a reasonable number for the probe analysis
         n_prompts = 200
-        prompts = [f"Test prompt {i} for three-level pattern analysis."
-                   for i in range(n_prompts)]
+        prompts = [
+            f"Test prompt {i} for three-level pattern analysis."
+            for i in range(n_prompts)
+        ]
         features = adapter.extract_features(prompts, layer="penultimate")
 
         # Create component labels (assign each prompt to a component)
@@ -84,8 +84,7 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
 
         # Run three-level summary analysis
         n_folds = config["n_folds"]
-        C = config["C"]
-        n_components_proj = config["n_components"]
+        C = config["C"]  # noqa: N806
 
         summary = compute_three_level_summary(
             pooled_features=features,

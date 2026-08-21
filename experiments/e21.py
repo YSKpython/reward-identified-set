@@ -34,9 +34,7 @@ def _load_adapter(config: dict[str, Any]) -> DeBERTaV3Adapter:
     """
     model_name = config["model"]["name"]
     if model_name != "OpenAssistant/reward-model-deberta-v3-base":
-        raise NotImplementedError(
-            f"Unsupported model architecture: {model_name}"
-        )
+        raise NotImplementedError(f"Unsupported model architecture: {model_name}")
     adapter = DeBERTaV3Adapter()
     adapter.load(device=config.get("device", "auto"))
     return adapter
@@ -83,7 +81,6 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
         # Build comparison pairs for Fisher construction
         n_samples = len(features)
         pairs_list = [(i, i + 1) for i in range(0, n_samples - 1, 2)]
-        pairs = np.array(pairs_list)
 
         # Predict rewards for reward differences
         rewards = adapter.predict_rewards(prompts)
@@ -91,16 +88,16 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
 
         # Build Fisher matrix
         fisher_result = build_fisher_matrix(features, pairs_list, reward_diffs)
-        F_full = fisher_result.fisher_matrix
+        F_full = fisher_result.fisher_matrix  # noqa: N806
 
         # Use Jacobian rows as J_w (readout Jacobian)
         # For this simplified version, we use jacobian_rows directly
-        J_w = jacobian_rows
+        J_w = jacobian_rows  # noqa: N806
 
         # Create a synthetic J_theta (backbone Jacobian) for testing
         # In practice, this would come from backbone parameter gradients
         rng = np.random.RandomState(config["seed"])
-        J_theta = rng.randn(n_prompts, features.shape[1])
+        J_theta = rng.randn(n_prompts, features.shape[1])  # noqa: N806
 
         # Create target vector a (reward shift direction)
         a = np.mean(jacobian_rows, axis=0)
@@ -112,7 +109,7 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
         if len(a) != J_w.shape[0]:
             # Adjust a to match J_w's row dimension
             a = np.zeros(J_w.shape[0])
-            a[:min(len(a), J_w.shape[0])] = 1.0 / np.sqrt(min(len(a), J_w.shape[0]))
+            a[: min(len(a), J_w.shape[0])] = 1.0 / np.sqrt(min(len(a), J_w.shape[0]))
 
         # Compute range projection
         tol = config["tol"]
@@ -126,7 +123,11 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
         # Perform LLF exactness check
         # Create F_llf as a subset of F_full (for demonstration)
         feature_dim = features.shape[1]
-        F_llf = F_full[:feature_dim, :feature_dim] if F_full.shape[0] >= feature_dim else F_full
+        F_llf = (  # noqa: N806
+            F_full[:feature_dim, :feature_dim]
+            if F_full.shape[0] >= feature_dim
+            else F_full
+        )
 
         margin = config["margin"]
         damping = 1e-6

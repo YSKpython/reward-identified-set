@@ -39,9 +39,7 @@ def _load_adapter(config: dict[str, Any]) -> DeBERTaV3Adapter:
     """
     model_name = config["model"]["name"]
     if model_name != "OpenAssistant/reward-model-deberta-v3-base":
-        raise NotImplementedError(
-            f"Unsupported model architecture: {model_name}"
-        )
+        raise NotImplementedError(f"Unsupported model architecture: {model_name}")
     adapter = DeBERTaV3Adapter()
     adapter.load(device=config.get("device", "auto"))
     return adapter
@@ -99,7 +97,7 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
 
         # Build Fisher matrix
         fisher_result = build_fisher_matrix(features, pairs_list, reward_diffs)
-        F = fisher_result.fisher_matrix
+        F = fisher_result.fisher_matrix  # noqa: N806
 
         # Generate cross-component and within-component directions
         n_cross = config["n_cross_directions"]
@@ -134,7 +132,6 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
 
         # Compute Fisher rank
         fisher_rank_val = fisher_rank(F)
-        null_space_dim = feature_dim - fisher_rank_val
 
         results = {
             "vulnerability_ratio": float(vr_result.vulnerability_ratio),

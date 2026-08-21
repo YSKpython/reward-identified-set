@@ -11,16 +11,13 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import numpy as np
 from datasets import Dataset, load_dataset
 
 
-def download_hh_rlhf(
-    split: str = "test",
-    cache_dir: str = "data/raw"
-) -> Dataset:
+def download_hh_rlhf(split: str = "test", cache_dir: str = "data/raw") -> Dataset:
     """Download the Anthropic HH-RLHF dataset.
 
     Args:
@@ -45,11 +42,7 @@ def download_hh_rlhf(
     return dataset
 
 
-def select_prompt_subset(
-    dataset: Dataset,
-    n_prompts: int,
-    seed: int = 42
-) -> List[int]:
+def select_prompt_subset(dataset: Dataset, n_prompts: int, seed: int = 42) -> list[int]:
     """Select a deterministic subset of prompt indices from the dataset.
 
     Args:
@@ -77,9 +70,8 @@ def select_prompt_subset(
 
 
 def extract_prompts_and_responses(
-    dataset: Dataset,
-    indices: List[int]
-) -> List[Dict[str, Any]]:
+    dataset: Dataset, indices: list[int]
+) -> list[dict[str, Any]]:
     """Extract prompt, chosen response, and rejected response for selected indices.
 
     The HH-RLHF dataset has fields `chosen` and `rejected`, each containing a
@@ -92,7 +84,7 @@ def extract_prompts_and_responses(
     Returns:
         List of dicts with keys: "index", "prompt", "chosen", "rejected".
     """
-    records: List[Dict[str, Any]] = []
+    records: list[dict[str, Any]] = []
 
     for idx in indices:
         item = dataset[idx]
@@ -126,17 +118,19 @@ def extract_prompts_and_responses(
             # Use the chosen prompt as canonical
             pass
 
-        records.append({
-            "index": int(idx),
-            "prompt": prompt,
-            "chosen": chosen,
-            "rejected": rejected,
-        })
+        records.append(
+            {
+                "index": int(idx),
+                "prompt": prompt,
+                "chosen": chosen,
+                "rejected": rejected,
+            }
+        )
 
     return records
 
 
-def save_subset(records: List[Dict[str, Any]], output_path: str) -> None:
+def save_subset(records: list[dict[str, Any]], output_path: str) -> None:
     """Save the subset as a JSON file.
 
     Args:
@@ -214,7 +208,7 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    print(f"Configuration:")
+    print("Configuration:")
     print(f"  Split: {args.split}")
     print(f"  Number of prompts: {args.n_prompts}")
     print(f"  Seed: {args.seed}")
