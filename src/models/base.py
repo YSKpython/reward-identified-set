@@ -1,10 +1,9 @@
 """Abstract base class for reward model adapters."""
+
 from __future__ import annotations
 
 import abc
 from collections.abc import Sequence
-from pathlib import Path
-from typing import Any
 
 import numpy as np
 
@@ -105,9 +104,7 @@ class RewardModelAdapter(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def compute_jacobian_rows(
-        self, prompts: Sequence[str]
-    ) -> np.ndarray:
+    def compute_jacobian_rows(self, prompts: Sequence[str]) -> np.ndarray:
         """Compute Jacobian rows d(reward)/d(readout_params) for each prompt.
 
         This method is used in E21 (VJP Range Finder) and E22 (Regime Hunt)

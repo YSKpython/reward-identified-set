@@ -13,7 +13,6 @@ feature-space vulnerabilities in RLHF reward models.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Union
 
 import numpy as np
 from sklearn.decomposition import PCA
@@ -107,15 +106,11 @@ def compute_pca(
     n_samples, n_features = features.shape
 
     if n_samples < 2:
-        raise ValueError(
-            f"Expected at least 2 samples, got {n_samples}"
-        )
+        raise ValueError(f"Expected at least 2 samples, got {n_samples}")
 
     # Validate threshold
     if not (0 < threshold <= 1):
-        raise ValueError(
-            f"Threshold must be in (0, 1], got {threshold}"
-        )
+        raise ValueError(f"Threshold must be in (0, 1], got {threshold}")
 
     # Run PCA with full SVD for exact computation
     pca = PCA(n_components=None, svd_solver="full", random_state=random_state)
@@ -240,8 +235,6 @@ def explain_variance_at_rank(
         raise ValueError(f"Rank must be >= 1, got {rank}")
 
     if rank > n_components:
-        raise ValueError(
-            f"Rank must be <= {n_components}, got {rank}"
-        )
+        raise ValueError(f"Rank must be <= {n_components}, got {rank}")
 
     return float(cumulative_variance[rank - 1])

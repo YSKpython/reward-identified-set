@@ -1,8 +1,9 @@
 """DeBERTa-v3-base reward model adapter implementation."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Any, List, Optional
+from typing import Any
 
 import numpy as np
 import torch
@@ -31,9 +32,9 @@ class DeBERTaV3Adapter(RewardModelAdapter):
 
         The adapter is not loaded until load() is called.
         """
-        self._model: Optional[Any] = None
-        self._tokenizer: Optional[Any] = None
-        self._device: Optional[str] = None
+        self._model: Any | None = None
+        self._tokenizer: Any | None = None
+        self._device: str | None = None
         self._loaded: bool = False
 
     @property
@@ -153,9 +154,7 @@ class DeBERTaV3Adapter(RewardModelAdapter):
                 max_length=512,
             ).to(self._device)
 
-            outputs = self._model(
-                **inputs, output_hidden_states=True, return_dict=True
-            )
+            outputs = self._model(**inputs, output_hidden_states=True, return_dict=True)
 
             hidden_states = outputs.hidden_states
             # Extract penultimate layer: hidden_states[-2]
@@ -222,9 +221,7 @@ class DeBERTaV3Adapter(RewardModelAdapter):
 
         return rewards  # type: ignore[no-any-return]
 
-    def compute_jacobian_rows(
-        self, prompts: Sequence[str]
-    ) -> np.ndarray:
+    def compute_jacobian_rows(self, prompts: Sequence[str]) -> np.ndarray:
         """Compute Jacobian rows d(reward)/d(readout_params) for each prompt.
 
         For each prompt, computes the gradient of the scalar reward output
@@ -254,7 +251,7 @@ class DeBERTaV3Adapter(RewardModelAdapter):
         # Get readout layer parameters
         # The classifier is typically model.classifier or similar
         # For DeBERTa classification models, it's usually model.classifier
-        readout_params: List[torch.Tensor] = []
+        readout_params: list[torch.Tensor] = []
 
         # Find the classification head parameters
         # In HF AutoModelForSequenceClassification, this is typically in

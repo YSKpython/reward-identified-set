@@ -34,9 +34,7 @@ def _load_adapter(config: dict[str, Any]) -> DeBERTaV3Adapter:
     """
     model_name = config["model"]["name"]
     if model_name != "OpenAssistant/reward-model-deberta-v3-base":
-        raise NotImplementedError(
-            f"Unsupported model architecture: {model_name}"
-        )
+        raise NotImplementedError(f"Unsupported model architecture: {model_name}")
     adapter = DeBERTaV3Adapter()
     adapter.load(device=config.get("device", "auto"))
     return adapter
@@ -85,10 +83,12 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
 
         # Build Fisher matrix
         fisher_result = build_fisher_matrix(features, pairs_list, reward_diffs)
-        F = fisher_result.fisher_matrix
+        F = fisher_result.fisher_matrix  # noqa: N806
 
         # Construct constraint gradient g
-        feature_diffs = features[np.array(pairs_list)[:, 0]] - features[np.array(pairs_list)[:, 1]]
+        feature_diffs = (
+            features[np.array(pairs_list)[:, 0]] - features[np.array(pairs_list)[:, 1]]
+        )
         g = np.mean(feature_diffs, axis=0)
 
         # Normalize g
@@ -128,10 +128,7 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
         mc_llf = float(mc_llf_result.mc_value)
 
         # Compute divergence coefficient C = MC_LLF / MC_full
-        if mc_full > 0:
-            divergence_coefficient = mc_llf / mc_full
-        else:
-            divergence_coefficient = 1.0
+        divergence_coefficient = mc_llf / mc_full if mc_full > 0 else 1.0
 
         # Range inclusion holds if MC_full ≈ MC_LLF
         relative_gap = abs(mc_full - mc_llf) / max(mc_llf, 1e-10)

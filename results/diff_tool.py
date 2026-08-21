@@ -7,11 +7,10 @@ checking via absolute and relative tolerances.
 
 import argparse
 import json
-import math
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 
 @dataclass
@@ -30,16 +29,16 @@ class DiffResult:
     """
 
     all_passed: bool
-    missing_keys: List[str]
-    extra_keys: List[str]
-    type_mismatches: List[Tuple[str, str, str]]
-    numerical_mismatches: List[Tuple[str, Union[int, float], Union[int, float]]]
-    string_mismatches: List[Tuple[str, str, str]]
+    missing_keys: list[str]
+    extra_keys: list[str]
+    type_mismatches: list[tuple[str, str, str]]
+    numerical_mismatches: list[tuple[str, int | float, int | float]]
+    string_mismatches: list[tuple[str, str, str]]
     n_checks: int
     n_passed: int
 
 
-def load_json(path: str) -> Dict[str, Any]:
+def load_json(path: str) -> dict[str, Any]:
     """Load a JSON file from the given path.
 
     Args:
@@ -56,10 +55,10 @@ def load_json(path: str) -> Dict[str, Any]:
     if not file_path.exists():
         raise FileNotFoundError(f"File not found: {path}")
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON in {path}: {e}")
+        raise ValueError(f"Invalid JSON in {path}: {e}") from None
 
 
 def _compare_values(
@@ -81,11 +80,11 @@ def _compare_values(
     Returns:
         DiffResult containing comparison results.
     """
-    missing_keys: List[str] = []
-    extra_keys: List[str] = []
-    type_mismatches: List[Tuple[str, str, str]] = []
-    numerical_mismatches: List[Tuple[str, Union[int, float], Union[int, float]]] = []
-    string_mismatches: List[Tuple[str, str, str]] = []
+    missing_keys: list[str] = []
+    extra_keys: list[str] = []
+    type_mismatches: list[tuple[str, str, str]] = []
+    numerical_mismatches: list[tuple[str, int | float, int | float]] = []
+    string_mismatches: list[tuple[str, str, str]] = []
     n_checks = 0
     n_passed = 0
 
@@ -167,9 +166,11 @@ def _compare_values(
             numerical_mismatches.append((key_path, actual, baseline))
 
     # Handle type mismatch
-    elif type(actual) != type(baseline):
+    elif type(actual) is not type(baseline):
         n_checks += 1
-        type_mismatches.append((key_path, type(actual).__name__, type(baseline).__name__))
+        type_mismatches.append(
+            (key_path, type(actual).__name__, type(baseline).__name__)
+        )
 
     # Same type but not covered above (e.g., None, etc.)
     elif actual == baseline:
@@ -194,8 +195,8 @@ def _compare_values(
 
 
 def compare_results(
-    actual: Dict[str, Any],
-    baseline: Dict[str, Any],
+    actual: dict[str, Any],
+    baseline: dict[str, Any],
     atol: float = 0.0,
     rtol: float = 0.0,
 ) -> DiffResult:

@@ -61,8 +61,8 @@ class ManipulationCostResult:
     is_vulnerable: bool
 
 
-def solve_fisher_system(
-    F: np.ndarray,
+def solve_fisher_system(  # noqa: N803
+    F: np.ndarray,  # noqa: N803
     g: np.ndarray,
     damping: float = 1e-6,
     tol: float = 1e-8,
@@ -102,7 +102,7 @@ def solve_fisher_system(
         >>> np.allclose(result.solution, g)
         True
     """
-    F = np.asarray(F, dtype=np.float64)
+    F = np.asarray(F, dtype=np.float64)  # noqa: N806
     g = np.asarray(g, dtype=np.float64)
 
     # Validate F is square
@@ -155,10 +155,10 @@ def solve_fisher_system(
         n_iterations = k + 1
 
         # Compute A @ p = F @ p + damping * p
-        Ap = F @ p + damping * p
+        Ap = F @ p + damping * p  # noqa: N806
 
         # Check for numerical stability: p @ Ap must be positive
-        pAp = np.dot(p, Ap)
+        pAp = np.dot(p, Ap)  # noqa: N806
         if pAp <= 0:
             # Numerical failure; return current best estimate
             residual_norm = float(np.linalg.norm(r))
@@ -201,8 +201,8 @@ def solve_fisher_system(
     )
 
 
-def compute_manipulation_cost(
-    F: np.ndarray,
+def compute_manipulation_cost(  # noqa: N803
+    F: np.ndarray,  # noqa: N803
     g: np.ndarray,
     margin: float,
     damping: float = 1e-6,
@@ -274,11 +274,13 @@ def compute_manipulation_cost(
     s = cg_result.solution
 
     # Compute vulnerability score V = g^T s
-    V = np.dot(g, s)
+    V = np.dot(g, s)  # noqa: N806
 
     # Validate V > 0
     if V <= 0:
-        raise ValueError("Vulnerability score V <= 0; indicates numerical failure or zero gradient")
+        raise ValueError(
+            "Vulnerability score V <= 0; indicates numerical failure or zero gradient"
+        )
 
     # Compute MC = margin / sqrt(V)
     mc_value = margin / np.sqrt(V)
@@ -341,4 +343,4 @@ def kl_budget_from_mc(mc_value: float) -> float:
         >>> kl_budget_from_mc(0.0129)
         8.3205e-05
     """
-    return (mc_value ** 2) / 2.0
+    return (mc_value**2) / 2.0

@@ -319,10 +319,7 @@ def cross_component_cosine(
     rng = np.random.RandomState(random_state)
 
     # Build exclusion set for fast lookup
-    if exclude_indices is None:
-        exclude_set = set()
-    else:
-        exclude_set = set(exclude_indices)
+    exclude_set = set() if exclude_indices is None else set(exclude_indices)
 
     # Sample pairs using rejection sampling
     cosines_list: list[float] = []
@@ -501,9 +498,7 @@ def bootstrap_ci(
         raise ValueError(f"Expected 1-D array, got {values.ndim}-D")
 
     if statistic not in ("mean", "std"):
-        raise ValueError(
-            f"statistic must be 'mean' or 'std', got '{statistic}'"
-        )
+        raise ValueError(f"statistic must be 'mean' or 'std', got '{statistic}'")
 
     if not (0 < ci < 1):
         raise ValueError(f"ci must be in (0, 1), got {ci}")

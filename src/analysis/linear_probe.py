@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any
 
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -69,7 +68,7 @@ def _run_cv_pipeline(
     features: np.ndarray,
     labels: np.ndarray,
     n_folds: int,
-    C: float,
+    C: float,  # noqa: N803
     random_state: int,
     feature_type: str,
 ) -> ProbeResult:
@@ -95,8 +94,8 @@ def _run_cv_pipeline(
     fold_accuracies_list: list[float] = []
 
     for train_idx, test_idx in skf.split(features, labels):
-        X_train = features[train_idx]
-        X_test = features[test_idx]
+        X_train = features[train_idx]  # noqa: N806
+        X_test = features[test_idx]  # noqa: N806
         y_train = labels[train_idx]
         y_test = labels[test_idx]
 
@@ -129,7 +128,7 @@ def run_linear_probe(
     features: np.ndarray,
     labels: np.ndarray,
     n_folds: int = 5,
-    C: float = 1.0,
+    C: float = 1.0,  # noqa: N803
     random_state: int = 42,
     feature_type: str = "pooled_hidden_state",
 ) -> ProbeResult:
@@ -160,15 +159,11 @@ def run_linear_probe(
     """
     # Validate features dimensionality
     if features.ndim != 2:
-        raise ValueError(
-            f"features must be 2-D, got {features.ndim}-D array"
-        )
+        raise ValueError(f"features must be 2-D, got {features.ndim}-D array")
 
     # Validate labels dimensionality
     if labels.ndim != 1:
-        raise ValueError(
-            f"labels must be 1-D, got {labels.ndim}-D array"
-        )
+        raise ValueError(f"labels must be 1-D, got {labels.ndim}-D array")
 
     # Validate length match
     if len(features) != len(labels):
@@ -208,7 +203,7 @@ def run_tfidf_probe(
     texts: Sequence[str],
     labels: np.ndarray,
     n_folds: int = 5,
-    C: float = 1.0,
+    C: float = 1.0,  # noqa: N803
     random_state: int = 42,
     max_features: int = 10000,
 ) -> ProbeResult:
@@ -266,7 +261,7 @@ def run_random_projection_probe(
     features: np.ndarray,
     labels: np.ndarray,
     n_folds: int = 5,
-    C: float = 1.0,
+    C: float = 1.0,  # noqa: N803
     random_state: int = 42,
     n_components: int = 1024,
 ) -> ProbeResult:
@@ -298,7 +293,7 @@ def run_random_projection_probe(
     rng = np.random.RandomState(random_state)
     R = rng.normal(0, 1, size=(features.shape[1], n_components)) / np.sqrt(
         n_components
-    )
+    )  # noqa: N806
     projected = features @ R
 
     return _run_cv_pipeline(
@@ -315,7 +310,7 @@ def run_permuted_label_probe(
     features: np.ndarray,
     labels: np.ndarray,
     n_folds: int = 5,
-    C: float = 1.0,
+    C: float = 1.0,  # noqa: N803
     random_state: int = 42,
 ) -> ProbeResult:
     """Permute labels and run L2 logistic regression CV as a chance-level control.
@@ -353,7 +348,7 @@ def compute_three_level_summary(
     texts: Sequence[str],
     labels: np.ndarray,
     n_folds: int = 5,
-    C: float = 1.0,
+    C: float = 1.0,  # noqa: N803
     random_state: int = 42,
 ) -> ThreeLevelSummary:
     """Orchestrate all four probe variants and return a ThreeLevelSummary.

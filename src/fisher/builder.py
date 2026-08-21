@@ -22,7 +22,6 @@ The full within-component Fisher matrix is the sum over all comparison edges:
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Tuple
 
 import numpy as np
 
@@ -122,7 +121,7 @@ def compute_edge_curvatures(reward_diffs: np.ndarray) -> np.ndarray:
 
 def build_fisher_matrix(
     features: np.ndarray,
-    pairs: Sequence[Tuple[int, int]],
+    pairs: Sequence[tuple[int, int]],
     reward_diffs: np.ndarray,
 ) -> FisherBuildResult:
     """Construct the within-component Fisher information matrix.
@@ -228,7 +227,7 @@ def build_fisher_matrix(
     )
 
 
-def fisher_rank(F: np.ndarray, tol: float = 1e-10) -> int:
+def fisher_rank(F: np.ndarray, tol: float = 1e-10) -> int:  # noqa: N803
     """Compute the numerical rank of a symmetric matrix via SVD.
 
     Counts the number of singular values greater than the tolerance.
@@ -249,7 +248,7 @@ def fisher_rank(F: np.ndarray, tol: float = 1e-10) -> int:
         >>> fisher_rank(F)
         1
     """
-    F = np.asarray(F)
+    F = np.asarray(F)  # noqa: N806
 
     if F.ndim != 2 or F.shape[0] != F.shape[1]:
         raise ValueError("F must be a square matrix")
@@ -259,7 +258,7 @@ def fisher_rank(F: np.ndarray, tol: float = 1e-10) -> int:
     return rank_val
 
 
-def fisher_null_space_dim(F: np.ndarray, tol: float = 1e-10) -> int:
+def fisher_null_space_dim(F: np.ndarray, tol: float = 1e-10) -> int:  # noqa: N803
     """Compute the null space dimension of a symmetric matrix.
 
     Returns feature_dim - rank(F).
@@ -279,7 +278,7 @@ def fisher_null_space_dim(F: np.ndarray, tol: float = 1e-10) -> int:
         >>> fisher_null_space_dim(F)
         1
     """
-    F = np.asarray(F)
+    F = np.asarray(F)  # noqa: N806
 
     if F.ndim != 2 or F.shape[0] != F.shape[1]:
         raise ValueError("F must be a square matrix")
@@ -289,7 +288,7 @@ def fisher_null_space_dim(F: np.ndarray, tol: float = 1e-10) -> int:
     return null_dim
 
 
-def apply_tikhonov(F: np.ndarray, epsilon: float) -> np.ndarray:
+def apply_tikhonov(F: np.ndarray, epsilon: float) -> np.ndarray:  # noqa: N803
     """Apply Tikhonov regularization to the Fisher matrix.
 
     Returns F + epsilon * I, where I is the identity matrix. This regularized
@@ -312,7 +311,7 @@ def apply_tikhonov(F: np.ndarray, epsilon: float) -> np.ndarray:
         array([[1.5, 0. ],
                [0. , 2.5]])
     """
-    F = np.asarray(F)
+    F = np.asarray(F)  # noqa: N806
 
     if epsilon < 0:
         raise ValueError("epsilon must be non-negative")
@@ -324,7 +323,7 @@ def apply_tikhonov(F: np.ndarray, epsilon: float) -> np.ndarray:
     return F + epsilon * np.eye(n)
 
 
-def check_psd(F: np.ndarray, tol: float = 1e-8) -> bool:
+def check_psd(F: np.ndarray, tol: float = 1e-8) -> bool:  # noqa: N803
     """Check if a matrix is positive semidefinite.
 
     Uses eigendecomposition to verify all eigenvalues are >= -tol.
@@ -345,7 +344,7 @@ def check_psd(F: np.ndarray, tol: float = 1e-8) -> bool:
         >>> check_psd(F)
         False
     """
-    F = np.asarray(F)
+    F = np.asarray(F)  # noqa: N806
 
     if F.ndim != 2 or F.shape[0] != F.shape[1]:
         raise ValueError("F must be a square matrix")
