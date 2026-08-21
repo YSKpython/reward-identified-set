@@ -1,0 +1,26 @@
+# =============================================================================
+# configs/e16.yaml — Experiment E16: Feature-Space Audit
+# =============================================================================
+#
+# Purpose: Compute PCA effective rank and cosine similarity structure to
+# quantify how high-dimensional representations collapse into a low-rank
+# manifold. This is the foundational feature-space vulnerability audit.
+#
+# Expected values (from NeurIPS 2027 submission):
+#   - effective_rank: 36
+#   - within_cosine: 0.960
+#   - cross_cosine: 0.773
+#   - gap: 0.187
+# =============================================================================
+
+experiment_id: "e16"
+name: "Feature-Space Audit"
+
+# PCA analysis
+pca_threshold: 0.95
+
+# Number of prompts to process
+n_prompts: 500
+
+# Number of cross-component pairs for baseline
+n_cross_pairs: 10000

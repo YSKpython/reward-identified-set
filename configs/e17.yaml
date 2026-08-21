@@ -1,0 +1,29 @@
+# =============================================================================
+# configs/e17.yaml — Experiment E17: Neural Manipulation Cost Audit
+# =============================================================================
+#
+# Purpose: Compute the Fisher information matrix and use conjugate gradient
+# to solve for the minimum manipulation cost. This quantifies vulnerability
+# under the Fisher metric geometry.
+#
+# Expected values (from NeurIPS 2027 submission):
+#   - V: 59.68
+#   - MC_LLF: 0.0129
+#   - KL_budget: ≈8.3e-5
+# =============================================================================
+
+experiment_id: "e17"
+name: "Neural Manipulation Cost Audit"
+
+# Number of prompts for audit
+n_audit_prompts: 100
+
+# Target reward shift margin
+margin: 0.1
+
+# Tikhonov damping for Fisher regularization
+damping: 1.0e-6
+
+# Conjugate gradient solver settings
+cg_tolerance: 1.0e-8
+cg_max_iter: 1000
