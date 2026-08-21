@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint-and-type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run mypy type checking
+        run: mypy --strict src/ experiments/ results/diff_tool.py data/download_hh_rlhf.py
+
+      - name: Run ruff linting
+        run: ruff check src/ experiments/
+
+      - name: Run black formatting check
+        run: black --check src/ experiments/
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run fast tests only
+        run: pytest tests/ -v -m "not slow and not gpu and not tpu" --cov=src --cov-report=term-missing
+
+      - name: Verify baseline files are valid
+        run: python -c "import json; [json.load(open(f'results/baseline/e{n}.json')) for n in [16,17,20,21,22,88]]"
+
+  reproducibility-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run diff tool self-check
+        run: |
+          for n in 16 17 20 21 22 88; do
+            python results/diff_tool.py \
+              --actual results/baseline/e${n}.json \
+              --baseline results/baseline/e${n}.json \
+              --strict
+          done
