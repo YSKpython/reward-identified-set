@@ -1,0 +1,21 @@
+{
+  "experiment_id": "e20",
+  "experiment_name": "Three-Level Pattern",
+  "expected_values": {
+    "pooled_accuracy": 0.472,
+    "pooled_std": 0.018,
+    "tfidf_accuracy": 0.920,
+    "tfidf_std": 0.014,
+    "random_projection_accuracy": 0.505,
+    "permuted_label_accuracy": 0.485,
+    "three_level_pattern_confirmed": true
+  },
+  "metadata": {
+    "model": "OpenAssistant/reward-model-deberta-v3-base",
+    "n_prompts": 500,
+    "seed": 42,
+    "source": "paper-reported values (NeurIPS 2027 submission)",
+    "generated_at": "2026-01-01T00:00:00Z",
+    "notes": "Reference values from the paper. Update after first real run."
+  }
+}
