@@ -1,0 +1,19 @@
+{
+  "experiment_id": "e17",
+  "experiment_name": "Neural Manipulation Cost Audit",
+  "expected_values": {
+    "vulnerability_score": 59.68,
+    "mc_llf": 0.0129,
+    "kl_budget": 8.3e-5,
+    "margin": 0.1,
+    "damping": 1.0e-6
+  },
+  "metadata": {
+    "model": "OpenAssistant/reward-model-deberta-v3-base",
+    "n_prompts": 100,
+    "seed": 42,
+    "source": "paper-reported values (NeurIPS 2027 submission)",
+    "generated_at": "2026-01-01T00:00:00Z",
+    "notes": "Reference values from the paper. Update after first real run."
+  }
+}

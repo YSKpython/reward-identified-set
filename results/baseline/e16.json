@@ -1,0 +1,20 @@
+{
+  "experiment_id": "e16",
+  "experiment_name": "Feature-Space Audit",
+  "expected_values": {
+    "effective_rank": 36,
+    "within_cosine_mean": 0.960,
+    "within_cosine_std": 0.012,
+    "cross_cosine_mean": 0.773,
+    "cross_cosine_std": 0.028,
+    "cosine_gap": 0.187
+  },
+  "metadata": {
+    "model": "OpenAssistant/reward-model-deberta-v3-base",
+    "n_prompts": 500,
+    "seed": 42,
+    "source": "paper-reported values (NeurIPS 2027 submission)",
+    "generated_at": "2026-01-01T00:00:00Z",
+    "notes": "Reference values from the paper. Update after first real run."
+  }
+}

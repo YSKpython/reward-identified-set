@@ -1,0 +1,18 @@
+{
+  "experiment_id": "e22",
+  "experiment_name": "Regime Hunt at Scale",
+  "expected_values": {
+    "mc_full_approx": true,
+    "mc_llf_approx": true,
+    "divergence_coefficient_stable": true,
+    "range_inclusion_holds": true
+  },
+  "metadata": {
+    "model": "OpenAssistant/reward-model-deberta-v3-base",
+    "n_prompts": 200,
+    "seed": 42,
+    "source": "paper-reported values (NeurIPS 2027 submission)",
+    "generated_at": "2026-01-01T00:00:00Z",
+    "notes": "Reference values from the paper. Update after first real run."
+  }
+}
