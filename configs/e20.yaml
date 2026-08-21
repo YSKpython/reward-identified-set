@@ -1,0 +1,27 @@
+# =============================================================================
+# configs/e20.yaml — Experiment E20: Three-Level Pattern Analysis
+# =============================================================================
+#
+# Purpose: Test whether component identity can be decoded from different
+# feature representations using linear probes. The three-level pattern
+# hypothesis predicts that pooled hidden states are near chance while
+# TF-IDF features substantially outperform them.
+#
+# Expected values (from NeurIPS 2027 submission):
+#   - pooled: 0.472
+#   - tfidf: 0.920
+#   - random_proj: 0.505
+#   - permuted: 0.485
+# =============================================================================
+
+experiment_id: "e20"
+name: "Three-Level Pattern"
+
+# Cross-validation settings
+n_folds: 5
+
+# Inverse regularization strength for logistic regression
+C: 1.0
+
+# Number of components for random projection baseline
+n_components: 1024

@@ -1,0 +1,24 @@
+# =============================================================================
+# configs/e22.yaml — Experiment E22: Regime Hunt at Scale
+# =============================================================================
+#
+# Purpose: Compare MC_full and MC_LLF to identify manipulation cost regimes.
+# The divergence coefficient C = MC_LLF / MC_full indicates whether the
+# LLF bound is tight (C ≈ 1) or loose (C > 1).
+#
+# Expected values (from NeurIPS 2027 submission):
+#   - MC_full ≈ MC_LLF
+#   - divergence_C: stable
+# =============================================================================
+
+experiment_id: "e22"
+name: "Regime Hunt at Scale"
+
+# Number of prompts for audit
+n_audit_prompts: 200
+
+# Target reward shift margin
+margin: 0.1
+
+# Tolerance for range inclusion check
+tol: 1.0e-10

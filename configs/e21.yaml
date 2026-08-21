@@ -1,0 +1,26 @@
+# =============================================================================
+# configs/e21.yaml — Experiment E21: VJP Range Finder
+# =============================================================================
+#
+# Purpose: Compute the range projection of the readout Jacobian and test
+# LLF exactness conditions. This identifies when manipulation costs can be
+# computed exactly from last-layer fine-tuning alone.
+#
+# Expected values (from NeurIPS 2027 submission):
+#   - MC_RRF: 0.2645
+#   - MC_LLF: 0.2647
+#   - rank: 13
+#   - gap: <0.001
+# =============================================================================
+
+experiment_id: "e21"
+name: "VJP Range Finder"
+
+# Number of prompts for range analysis
+n_prompts: 25
+
+# Target reward shift margin
+margin: 0.1
+
+# Tolerance for rank determination and range inclusion check
+tol: 1.0e-10

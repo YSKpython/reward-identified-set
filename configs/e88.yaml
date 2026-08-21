@@ -1,0 +1,32 @@
+# =============================================================================
+# configs/e88.yaml — Experiment E88: Real-World Feature-Space Audit
+# =============================================================================
+#
+# Purpose: Comprehensive feature-space audit computing vulnerability ratios
+# and geometric asymmetry between cross-component and within-component
+# manipulation directions. This is the full end-to-end audit pipeline.
+#
+# Expected values (from NeurIPS 2027 submission):
+#   - fisher_rank: 501
+#   - null_space: 523
+#   - cross_median: 247.33
+#   - within_median: 3.63
+#   - asymmetry: ≈68
+#   - vuln_ratio: 14.6
+# =============================================================================
+
+experiment_id: "e88"
+name: "Real-World Feature-Space Audit"
+
+# Number of prompts for audit
+n_prompts: 500
+
+# Target reward shift margin
+margin: 0.1
+
+# Tikhonov damping for Fisher regularization
+damping: 1.0e-6
+
+# Number of directions to generate
+n_cross_directions: 100
+n_within_directions: 100
